@@ -7,14 +7,14 @@ const Card = ({ item, isFavorite, toggleFavorite }) => {
       <img 
         src={item.links.patch.small || 'https://via.placeholder.com/200'} 
         alt={item.name}
-        className="w-full h-48 object-contain bg-slate-800 p-4 group-hover:scale-105 transition-transform"
+        className="w-full h-48 object-contain bg-slate-800 p-4"
       />
       <div className="p-5">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-bold text-lg truncate">{item.name}</h3>
           <button 
             onClick={() => toggleFavorite(item)}
-            className={`p-2 rounded-full transition-colors ${isFavorite ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-gray-400 hover:text-white'}`}
+            className={`p-2 rounded-full transition-colors ${isFavorite ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-gray-400'}`}
             aria-label="Agregar a favoritos"
           >
             <Heart size={20} fill={isFavorite ? "currentColor" : "none"} />
