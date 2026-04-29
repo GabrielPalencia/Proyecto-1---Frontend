@@ -10,22 +10,28 @@ const Details = ({ favorites, toggleFavorite }) => {
   const [launch, setLaunch] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+useEffect(() => {
     const fetchLaunch = async () => {
-      try {
-        const res = await fetch(`https://api.spacexdata.com/v4/launches/${id}`);
-        if (!res.ok) throw new Error('No se encontró el lanzamiento');
-        const data = await res.json();
-        setLaunch(data);
-      } catch (err) {
-        toast.error(err.message);
-        navigate('/404');
-      } finally {
-        setLoading(false);
-      }
+        try {
+            const res = await fetch(`https://api.spacexdata.com/v4/launches/${id}`);
+            if (!res.ok) throw new Error('No se encontró el lanzamiento');
+            const data = await res.json();
+            if (data.success === false && !Array.isArray(data.failures)) {
+                data.failures = [];
+            }
+            setLaunch(data);
+        } catch (err) {
+            toast.error(err.message);
+            navigate('/404');
+        } finally {
+            setLoading(false);
+        }
     };
     fetchLaunch();
-  }, [id, navigate]);
+}, [id, navigate]);
+
+const missionSucceeded = launch?.success === true;
+const missionFailures = launch?.success === false ? launch.failures || [] : [];
 
   if (loading) return <Loader />;
   if (!launch) return null;
@@ -36,7 +42,7 @@ const Details = ({ favorites, toggleFavorite }) => {
     <div className="max-w-4xl mx-auto">
       <button 
         onClick={() => navigate(-1)} 
-        className="flex items-center gap-2 text-gray-400 hover:text-cyan-400 mb-6 transition-colors"
+        className="flex items-center gap-2 text-gray-400 mb-6 hover:text-gray-200"
       >
         <ChevronLeft size={20} /> Volver
       </button>
@@ -55,7 +61,7 @@ const Details = ({ favorites, toggleFavorite }) => {
             <h1 className="text-4xl font-black uppercase mb-4 tracking-tighter">{launch.name}</h1>
             <button 
               onClick={() => toggleFavorite(launch)}
-              className={`p-3 rounded-full ${isFavorite ? 'bg-red-500 text-white' : 'bg-white/5 text-gray-400'}`}
+              className={`p-3 rounded-full ${isFavorite ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-gray-400'}`}
             >
               <Heart fill={isFavorite ? "currentColor" : "none"} />
             </button>
@@ -64,6 +70,13 @@ const Details = ({ favorites, toggleFavorite }) => {
           <div className="space-y-4">
             <p className="text-gray-300 leading-relaxed text-lg">
               {launch.details || "Esta misión no tiene detalles adicionales registrados."}
+            </p>
+
+            <p className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${missionSucceeded ? 'bg-green-600 text-green-100' : 'bg-red-600 text-red-100'}`}>
+              {missionSucceeded ? 'Misión Exitosa' : 'Misión Fallida'}
+            </p>
+            <p className="text-sm text-gray-500">
+              {missionFailures.length > 0 && `Razones de fallo: ${missionFailures.map(f => f.reason).join(', ')}`}
             </p>
             
             <div className="pt-6 border-t border-white/5">

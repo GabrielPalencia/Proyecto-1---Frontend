@@ -8,6 +8,7 @@ import Details from './views/Details';
 import Favorites from './views/Favorites';
 import About from './views/About';
 import NotFound from './views/Not-Found';
+import Footer from './components/Footer';
 
 
 
@@ -41,6 +42,8 @@ return (
 
         <Toaster position="bottom-right" />
       </div>
+      
+      <Footer />
     </BrowserRouter>
   );
 }
